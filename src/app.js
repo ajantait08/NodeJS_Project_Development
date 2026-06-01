@@ -5,14 +5,20 @@ const express = require('express');
 
 const app = express();
 
-// info --> Here the below function is known as request handler function.
-// info --> Although the below function is a request handler function but it will take a route , "/test" in this case
-app.use('/',(req , res) => {
-    
-    res.send("Hello from the servers Anjani!");
+// info --> This will only handle get calls to '/users'
+app.get('/user',(req,res) => {
+    res.send({firstname : 'Ajanta' , lastname : "Ghosh"});
 });
 
-// ** Here in app.listen we provide the PORT no. along with the callback function to indicate that the server is UP and Running....
+app.post('/user',(req , res) => {
+    res.send("Data successfully saved in the database");
+});
+
+app.delete('/user' , (req , res)=>{
+  res.send('User Successfully Deleted !');
+});
+
+
 app.listen(3000, () => {
     console.log("Hello from the server !");
 });
@@ -22,6 +28,55 @@ app.listen(3000, () => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ---- Initial Route Setup -----//
+
+// info --> Here the below function is known as request handler function.
+// info --> Although the below function is a request handler function but it will take a route , "/test" in this case
+
+// info --> Because of "/" in below route as long as any route will have "/" it will be redirected to first route where "/" path is mentioned. 
+
+// info --> This will handle all http calls to '/users'
+
+// app.use('/hello/2', (req , res) => {
+//    res.send('Testing the route hello-2');
+// });
+
+// app.use('/hello' , (req , res) => {
+//     res.send('Testing the route hello');
+// })
+
+// ** Here the order of the routes is important
+
+// ** Because as soon as the browser comes to the below route , it starts matching the exact route from TOP - BOTTOM order , Here whenever it finds the wildcard '/' in path i.e ('% / %') and it find the match, its loads the default route
+// app.use('/',(req , res) => {    
+//     res.send("Hello from the servers Anjani!");
+// });
+
+// app.use('/test' , (req, res) => {
+//     res.send("Sending Hello from Test");
+// });
+
+// app.use('/123', (req, res) => {
+//     res.send('Sending Hello from 123');
+// })
+
+// ---- Initial Route Setup -----//
+
+// ** Here in app.listen we provide the PORT no. along with the callback function to indicate that the server is UP and Running....
 
 
 // ? What is Node Modules ? and What is the Use of Package-lock.json file ?
