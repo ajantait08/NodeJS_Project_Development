@@ -1,30 +1,25 @@
-// info --> here "require" means importing express from the node_modules
 const express = require('express');
-
-// info --> creating an instance of the express application
 
 const app = express();
 
-// info --> This will only handle get calls to '/users'
-app.get('/user',(req,res) => {
-    res.send({firstname : 'Ajanta' , lastname : "Ghosh"});
-});
-
-app.post('/user',(req , res) => {
-    res.send("Data successfully saved in the database");
-});
-
-app.delete('/user' , (req , res)=>{
-  res.send('User Successfully Deleted !');
-});
 
 
-app.listen(3000, () => {
-    console.log("Hello from the server !");
-});
+app.get("/admin/getAllData" , (req , res , next) => {
+    // Check if the request is authorized
+    // If the request is not authorized then send and error
+    res.send('Get All Data');
+})
+
+app.get("/admin/deleteData" , (req , res , next) => {
+    // Check if the request is authorized
+    // If the request is not authorized then send and error
+    res.send('Deleted a User');
+})
 
 
-
+app.listen(3000 , () => {
+    console.log('Server is listening on PORT:3000');
+})
 
 
 
@@ -33,65 +28,69 @@ app.listen(3000, () => {
 
 
 
+// ----- Basics of middleware route request handlers
+
+// ! info --> next() is used to move to the next middleware function in the stack. If you don't call next(), the request will be left hanging and the server will not respond to the client.
+// ! info --> Here , "(req , res , next) => {
+// !   console.log('1st Route');
+// !   next();
+// !}" -- is known as the request handler function or middleware function. It takes three parameters: req (the request object), res (the response object), and next (a function that you call to pass control to the next middleware function).
 
 
+// ----- Below is one way of representing middleware route request handlers
+// ----- Here below , we can all show Request Handlers in a Group of arrays that is group all Route Handlers in an array , or grouping two or three route handlers in an array.
 
 
+// app.use('/user' ,[
+//  (req , res , next) => {
+//    console.log('1st Route');
+//    //res.send('Sending a Response in the starting');
+//    next();
+// }, (req , res , next) => {
+//    console.log('2nd Route');
+//    res.send('Sending a Response in the 2nd Iteration..');
+//    next();
+// }, (req , res , next) => {
+//     console.log('3rd Route');
+// }, (req , res next) => {
+//    console.log('4th Route');    
+// }, (req , res next) => {
+//    console.log('5th Route');
+// }]
+//);
 
-
-
-
-
-// ---- Initial Route Setup -----//
-
-// info --> Here the below function is known as request handler function.
-// info --> Although the below function is a request handler function but it will take a route , "/test" in this case
-
-// info --> Because of "/" in below route as long as any route will have "/" it will be redirected to first route where "/" path is mentioned. 
-
-// info --> This will handle all http calls to '/users'
-
-// app.use('/hello/2', (req , res) => {
-//    res.send('Testing the route hello-2');
-// });
-
-// app.use('/hello' , (req , res) => {
-//     res.send('Testing the route hello');
+// app.listen(3000,() => {
+//     console.log('Server is listening on PORT:3000');
 // })
 
-// ** Here the order of the routes is important
 
-// ** Because as soon as the browser comes to the below route , it starts matching the exact route from TOP - BOTTOM order , Here whenever it finds the wildcard '/' in path i.e ('% / %') and it find the match, its loads the default route
-// app.use('/',(req , res) => {    
-//     res.send("Hello from the servers Anjani!");
+// ------ MIDDLEWARE -------------------//
+
+// GET /users => If we are having any matching route to '/users' , then it will go through all the
+// routes of the request handlers or middleware to reach to the required route and send the exact response.
+// So here if we provide "/" then it will handle all the routes being it "/"
+
+// Here By Default only the first route will be called.
+// Lets check the response of what will be the output if we donot do "res.send" and instead send it to the next route.
+// GET /users => It checks all the app.xxx("matching route") functions and will provide the required response.
+// So , all of the routes through which a particular request goes through is known as the middleware.
+
+// GET /users => middleware chain => request handler
+// So here our function goes through the middleware chain to finally reach the exact request handler which sends the response.
+
+
+// app.use('/',(req , res , next) => {
+//     //res.send("Handling / route");
+//     next(); // ! ==> Middleware
 // });
 
-// app.use('/test' , (req, res) => {
-//     res.send("Sending Hello from Test");
+// app.use('/user' , (req , res , next) => {
+//     console.log('1st Response');
+//     next(); // ! ==> Middleware
 // });
 
-// app.use('/123', (req, res) => {
-//     res.send('Sending Hello from 123');
-// })
-
-// ---- Initial Route Setup -----//
-
-// ** Here in app.listen we provide the PORT no. along with the callback function to indicate that the server is UP and Running....
-
-
-// ? What is Node Modules ? and What is the Use of Package-lock.json file ?
-
-// ! On doing npm install express js , we downloaded all the modules and files of express js and stored them in our node modules folder.
-// ! Dependency means any package on which our project is dependent on.
-// ! meaning of the "^" caret symbol - autoupgrade not exact version , exact version is mentioned in package-lock.json file.
-
-// ---- package-lock.json file ---- //
-// ! Package of the package-lock.json -> package-lock.json contains the exact version of the package that is installed in our projects. 
-// ! It also maintains the dependency tree of the different packages which are installed in our project. It helps to ensure that the same version of the package is installed in all the environments 
-// ! where the project is deployed. It also helps to prevent version conflict errors.
-
-//---- Nodemon Package-----//
-// In order to stop the server from being starting and stopping again and again after making the code changes nodemon is being used.
-// We will be required to install nodemon globally //
-// Nodemon will automatically refresh the server , whenever any changes will be made to the code.
-
+// app.get('/user' , (req , res , next) => {
+//     console.log('2nd Response');
+//     res.send('Response is being send from 2nd Route!'); // ! ==> Request Handlers
+//     //next();
+//});
