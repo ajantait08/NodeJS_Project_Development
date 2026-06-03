@@ -2,13 +2,34 @@ const express = require('express');
 
 const app = express();
 
+const {adminAuth, userAuth} = require('./middlewares/auth.js');
 
+// Generally Middlewares are written using "app.use" since we want the middlewares to work for all Http Methods , (PUT , PATCH , GET, POST , DELETE) , All the admin routes for "/admin" , will go to "app.use("/admin")"
+// if we write app.use and put it on the top.
+// There is one difference between app.use and app.all
+// Since here app.all matches the exact route i.e if there is route request for "/admin" then it will only go to "/admin" and not "/admin123" which is exactly what app.use does.
+
+
+app.use("/admin",adminAuth);
+
+
+// If there is a single route then check the Authentication and send the data back then we can write auth middleware checks in the pattern as provided below.
+
+// Here for accessing the user login we do not require auth and hence the AuthUser Middleware is not called here. 
+app.use("/user/login", (req , res , next) => { 
+    res.send('User Login Page');
+});
+
+// Here for fetching user data we do require auth 
+app.use("/user/data", userAuth , (req , res , next) => { 
+    res.send('Get User Data');
+});
 
 app.get("/admin/getAllData" , (req , res , next) => {
     // Check if the request is authorized
     // If the request is not authorized then send and error
-    res.send('Get All Data');
-})
+        res.send('Send All Data');
+});
 
 app.get("/admin/deleteData" , (req , res , next) => {
     // Check if the request is authorized
